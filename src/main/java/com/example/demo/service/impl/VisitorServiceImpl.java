@@ -6,7 +6,6 @@ import com.example.demo.service.VisitorService;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,7 +20,6 @@ public class VisitorServiceImpl implements VisitorService {
     @Override
     public Visitor createVisitor(Visitor visitor) {
 
-        // Rule: fullName, phone, idProof required
         if (visitor.getFullName() == null || visitor.getFullName().isEmpty()) {
             throw new IllegalArgumentException("fullName required");
         }
@@ -34,8 +32,7 @@ public class VisitorServiceImpl implements VisitorService {
             throw new IllegalArgumentException("idProof required");
         }
 
-        visitor.setCreatedAt(LocalDateTime.now());
-
+        // createdAt is set in entity constructor
         return visitorRepository.save(visitor);
     }
 
