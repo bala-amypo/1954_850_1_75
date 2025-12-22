@@ -1,38 +1,39 @@
-// package com.example.demo.service.impl;
+package com.example.demo.service;
 
-// import com.example.demo.exception.BadRequestException;
-// import com.example.demo.exception.ResourceNotFoundException;
-// import com.example.demo.model.RiskRule;
-// import com.example.demo.repository.RiskRuleRepository;
-// import com.example.demo.service.RiskRuleService;
+import java.util.List;
 
-// import java.util.List;
+import org.springframework.stereotype.Service;
 
-// public class RiskRuleServiceImpl implements RiskRuleService {
+import com.example.demo.model.RiskRule;
+import com.example.demo.repository.RiskRuleRepository;
 
-//     private final RiskRuleRepository riskRuleRepository;
+@Service
+public class RiskRuleServiceImpl implements RiskRuleService {
 
-//     public RiskRuleServiceImpl(RiskRuleRepository riskRuleRepository) {
-//         this.riskRuleRepository = riskRuleRepository;
-//     }
+    private final RiskRuleRepository riskRuleRepository;
 
-//     @Override
-//     public RiskRule createRule(RiskRule rule) {
-//         riskRuleRepository.findByRuleName(rule.getRuleName())
-//                 .ifPresent(r -> {
-//                     throw new BadRequestException("Rule name must be unique");
-//                 });
-//         return riskRuleRepository.save(rule);
-//     }
+    public RiskRuleServiceImpl(RiskRuleRepository riskRuleRepository) {
+        this.riskRuleRepository = riskRuleRepository;
+    }
 
-//     @Override
-//     public RiskRule getRule(Long id) {
-//         return riskRuleRepository.findById(id)
-//                 .orElseThrow(() -> new ResourceNotFoundException("RiskRule not found"));
-//     }
+    @Override
+    public RiskRule createRule(RiskRule rule) {
 
-//     @Override
-//     public List<RiskRule> getAllRules() {
-//         return riskRuleRepository.findAll();
-//     }
-// }
+        if (riskRuleRepository.existsByRuleName(rule.getRuleName())) {
+            throw new RuntimeException("Rule name must be unique");
+        }
+
+        return riskRuleRepository.save(rule);
+    }
+
+    @Override
+    public List<RiskRule> getAllRules() {
+        return riskRuleRepository.findAll();
+    }
+
+    @Override
+    public RiskRule getRule(Long id) {
+        return riskRuleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("RiskRule not found"));
+    }
+}
