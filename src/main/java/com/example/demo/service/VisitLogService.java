@@ -1,14 +1,14 @@
-package com.example.demo.service;
+// package com.example.demo.service;
 
-import com.example.demo.model.VisitLog;
+// import com.example.demo.model.VisitLog;
 
-import java.util.List;
+// import java.util.List;
 
-public interface VisitLogService {
+// public interface VisitLogService {
 
-    VisitLog createVisitLog(Long visitorId, VisitLog log);
+//     VisitLog createVisitLog(Long visitorId, VisitLog log);
 
-    VisitLog getLog(Long id);
+//     VisitLog getLog(Long id);
 
-    List<VisitLog> getLogsByVisitor(Long visitorId);
-}
+//     List<VisitLog> getLogsByVisitor(Long visitorId);
+// }

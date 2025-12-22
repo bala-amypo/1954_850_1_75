@@ -1,14 +1,14 @@
-package com.example.demo.service;
+// package com.example.demo.service;
 
-import com.example.demo.model.RiskScore;
+// import com.example.demo.model.RiskScore;
 
-import java.util.List;
+// import java.util.List;
 
-public interface RiskScoreService {
+// public interface RiskScoreService {
 
-    RiskScore evaluateVisitor(Long visitorId);
+//     RiskScore evaluateVisitor(Long visitorId);
 
-    RiskScore getScoreForVisitor(Long visitorId);
+//     RiskScore getScoreForVisitor(Long visitorId);
 
-    List<RiskScore> getAllScores();
-}
+//     List<RiskScore> getAllScores();
+// }

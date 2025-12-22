@@ -1,14 +1,14 @@
-package com.example.demo.service;
+// package com.example.demo.service;
 
-import com.example.demo.model.Visitor;
+// import com.example.demo.model.Visitor;
 
-import java.util.List;
+// import java.util.List;
 
-public interface VisitorService {
+// public interface VisitorService {
 
-    Visitor createVisitor(Visitor visitor);
+//     Visitor createVisitor(Visitor visitor);
 
-    Visitor getVisitor(Long id);
+//     Visitor getVisitor(Long id);
 
-    List<Visitor> getAllVisitors();
-}
+//     List<Visitor> getAllVisitors();
+// }
