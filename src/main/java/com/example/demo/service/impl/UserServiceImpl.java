@@ -1,67 +1,58 @@
-// package com.example.demo.service.impl;
+package com.example.demo.service.impl;
 
-// import com.example.demo.dto.AuthRequest;
-// import com.example.demo.dto.AuthResponse;
-// import com.example.demo.dto.RegisterRequest;
-// import com.example.demo.exception.BadRequestException;
-// import com.example.demo.exception.ResourceNotFoundException;
-// import com.example.demo.model.User;
-// import com.example.demo.repository.UserRepository;
-// import com.example.demo.security.JwtTokenProvider;
-// import com.example.demo.service.UserService;
-// import org.springframework.security.crypto.password.PasswordEncoder;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+import com.example.demo.dto.RegisterRequest;
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
 
-// import java.util.Set;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
-// public class UserServiceImpl implements UserService {
+@Service
+public class UserServiceImpl implements UserService {
 
-//     private final UserRepository userRepository;
-//     private final PasswordEncoder passwordEncoder;
-//     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-//     public UserServiceImpl(
-//             UserRepository userRepository,
-//             PasswordEncoder passwordEncoder,
-//             JwtTokenProvider jwtTokenProvider) {
-//         this.userRepository = userRepository;
-//         this.passwordEncoder = passwordEncoder;
-//         this.jwtTokenProvider = jwtTokenProvider;
-//     }
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
+    }
 
-//     @Override
-//     public User register(RegisterRequest request) {
-//         userRepository.findByEmail(request.getEmail())
-//                 .ifPresent(u -> {
-//                     throw new BadRequestException("Email already exists");
-//                 });
+    @Override
+    public User register(RegisterRequest request) {
 
-//         User user = User.builder()
-//                 .email(request.getEmail())
-//                 .password(passwordEncoder.encode(request.getPassword()))
-//                 .role(Set.of("ROLE_USER"))
-//                 .build();
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
 
-//         return userRepository.save(user);
-//     }
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRoles());
 
-//     @Override
-//     public AuthResponse login(AuthRequest request) {
-//         User user = userRepository.findByEmail(request.getEmail())
-//                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.save(user);
+    }
 
-//         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-//             throw new BadRequestException("Invalid credentials");
-//         }
+    @Override
+    public AuthResponse login(AuthRequest request) {
 
-//         String token = jwtTokenProvider.generateToken(
-//                 user.getEmail(), user.getRole());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-//         return new AuthResponse(token, user.getEmail(), user.getRole());
-//     }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
 
-//     @Override
-//     public User getByEmail(String email) {
-//         return userRepository.findByEmail(email)
-//                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-//     }
-// }
+        // JWT not required as of now → simple response
+        return new AuthResponse("Login successful");
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+}
