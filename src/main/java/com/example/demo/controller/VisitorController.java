@@ -1,39 +1,35 @@
-package com.example.demo.model;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import com.example.demo.model.Visitor;
+import com.example.demo.service.VisitorService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Visitor {
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RestController
+@RequestMapping("/api/visitors")
+@Tag(name = "Visitors")
+public class VisitorController {
 
-    private String fullName;
+    private final VisitorService visitorService;
 
-    private String email;
+    public VisitorController(VisitorService visitorService) {
+        this.visitorService = visitorService;
+    }
 
-    private String phone;
+    @PostMapping
+    public Visitor createVisitor(@RequestBody Visitor visitor) {
+        return visitorService.createVisitor(visitor);
+    }
 
-    private String idProof;
+    @GetMapping("/{id}")
+    public Visitor getVisitor(@PathVariable Long id) {
+        return visitorService.getVisitor(id);
+    }
 
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void validate() {
-        if (phone == null || phone.isBlank()) {
-            throw new RuntimeException("phone required");
-        }
-        if (fullName == null || idProof == null) {
-            throw new RuntimeException("phone required");
-        }
-        this.createdAt = LocalDateTime.now();
+    @GetMapping
+    public List<Visitor> getAllVisitors() {
+        return visitorService.getAllVisitors();
     }
 }

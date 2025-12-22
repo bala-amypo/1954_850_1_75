@@ -1,42 +1,37 @@
-package com.example.demo.model;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import com.example.demo.model.VisitLog;
+import com.example.demo.service.VisitLogService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class VisitLog {
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RestController
+@RequestMapping("/api/visit-logs")
+@Tag(name = "Visit Logs")
+public class VisitLogController {
 
-    @ManyToOne
-    private Visitor visitor;
+    private final VisitLogService visitLogService;
 
-    private LocalDateTime entryTime;
+    public VisitLogController(VisitLogService visitLogService) {
+        this.visitLogService = visitLogService;
+    }
 
-    private LocalDateTime exitTime;
+    @PostMapping("/{visitorId}")
+    public VisitLog createLog(
+            @PathVariable Long visitorId,
+            @RequestBody VisitLog log) {
+        return visitLogService.createVisitLog(visitorId, log);
+    }
 
-    private String purpose;
+    @GetMapping("/{id}")
+    public VisitLog getLog(@PathVariable Long id) {
+        return visitLogService.getLog(id);
+    }
 
-    private String location;
-
-    @PrePersist
-    public void validate() {
-        this.entryTime = LocalDateTime.now();
-
-        if (purpose == null || location == null) {
-            throw new RuntimeException("purpose and location required");
-        }
-
-        if (exitTime != null && !exitTime.isAfter(entryTime)) {
-            throw new RuntimeException("exitTime must be after entryTime");
-        }
+    @GetMapping("/visitor/{visitorId}")
+    public List<VisitLog> getLogsByVisitor(@PathVariable Long visitorId) {
+        return visitLogService.getLogsByVisitor(visitorId);
     }
 }
