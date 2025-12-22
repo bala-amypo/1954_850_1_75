@@ -1,67 +1,59 @@
-// package com.example.demo.service.impl;
+package com.example.demo.service.impl;
 
-// import com.example.demo.exception.ResourceNotFoundException;
-// import com.example.demo.model.RiskRule;
-// import com.example.demo.model.RiskScore;
-// import com.example.demo.model.Visitor;
-// import com.example.demo.repository.RiskRuleRepository;
-// import com.example.demo.repository.RiskScoreRepository;
-// import com.example.demo.repository.VisitorRepository;
-// import com.example.demo.service.RiskScoreService;
-// import com.example.demo.util.RiskLevelUtils;
+import com.example.demo.model.RiskScore;
+import com.example.demo.model.Visitor;
+import com.example.demo.repository.RiskScoreRepository;
+import com.example.demo.repository.VisitorRepository;
+import com.example.demo.service.RiskScoreService;
+import com.example.demo.util.RiskLevelUtils;
 
-// import java.util.List;
+import org.springframework.stereotype.Service;
 
-// public class RiskScoreServiceImpl implements RiskScoreService {
+import java.time.LocalDateTime;
+import java.util.List;
 
-//     private final VisitorRepository visitorRepository;
-//     private final RiskRuleRepository riskRuleRepository;
-//     private final RiskScoreRepository riskScoreRepository;
+@Service
+public class RiskScoreServiceImpl implements RiskScoreService {
 
-//     public RiskScoreServiceImpl(
-//             VisitorRepository visitorRepository,
-//             RiskRuleRepository riskRuleRepository,
-//             RiskScoreRepository riskScoreRepository) {
-//         this.visitorRepository = visitorRepository;
-//         this.riskRuleRepository = riskRuleRepository;
-//         this.riskScoreRepository = riskScoreRepository;
-//     }
+    private final RiskScoreRepository riskScoreRepository;
+    private final VisitorRepository visitorRepository;
 
-//     @Override
-//     public RiskScore evaluateVisitor(Long visitorId) {
-//         Visitor visitor = visitorRepository.findById(visitorId)
-//                 .orElseThrow(() -> new ResourceNotFoundException("Visitor not found"));
+    public RiskScoreServiceImpl(
+            RiskScoreRepository riskScoreRepository,
+            VisitorRepository visitorRepository) {
+        this.riskScoreRepository = riskScoreRepository;
+        this.visitorRepository = visitorRepository;
+    }
 
-//         List<RiskRule> rules = riskRuleRepository.findAll();
-//         int totalScore = 0;
+    @Override
+    public RiskScore evaluateVisitor(Long visitorId) {
 
-//         for (RiskRule rule : rules) {
-//             totalScore += rule.getScoreImpact();
-//         }
+        Visitor visitor = visitorRepository.findById(visitorId)
+                .orElseThrow(() -> new RuntimeException("Visitor not found with id " + visitorId));
 
-//         if (totalScore < 0) {
-//             totalScore = 0;
-//         }
+        int totalScore = RiskLevelUtils.calculateTotalScore(visitor);
 
-//         String level = RiskLevelUtils.determineRiskLevel(totalScore);
+        if (totalScore < 0) {
+            throw new IllegalArgumentException("totalScore must be >= 0");
+        }
 
-//         RiskScore score = RiskScore.builder()
-//                 .visitor(visitor)
-//                 .totalScore(totalScore)
-//                 .riskLevel(level)
-//                 .build();
+        String riskLevel = RiskLevelUtils.getRiskLevel(totalScore);
 
-//         return riskScoreRepository.save(score);
-//     }
+        RiskScore riskScore = new RiskScore();
+        riskScore.setVisitor(visitor);
+        riskScore.setTotalScore(totalScore);
+        riskScore.setRiskLevel(riskLevel);
 
-//     @Override
-//     public RiskScore getScoreForVisitor(Long visitorId) {
-//         return riskScoreRepository.findByVisitorId(visitorId)
-//                 .orElseThrow(() -> new ResourceNotFoundException("RiskScore not found"));
-//     }
+        return riskScoreRepository.save(riskScore);
+    }
 
-//     @Override
-//     public List<RiskScore> getAllScores() {
-//         return riskScoreRepository.findAll();
-//     }
-// }
+    @Override
+    public RiskScore getScoreForVisitor(Long visitorId) {
+        return riskScoreRepository.findByVisitorId(visitorId);
+    }
+
+    @Override
+    public List<RiskScore> getAllScores() {
+        return riskScoreRepository.findAll();
+    }
+}
