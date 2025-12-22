@@ -1,35 +1,36 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.dto.AuthRequest;
-// import com.example.demo.dto.AuthResponse;
-// import com.example.demo.dto.RegisterRequest;
-// import com.example.demo.model.User;
-// import com.example.demo.service.UserService;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.model.User;
+import com.example.demo.service.UserService;
 
-// @RestController
-// @RequestMapping("/auth")
-// @Tag(name = "Authentication")
-// public class AuthController {
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-//     private final UserService userService;
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
 
-//     public AuthController(UserService userService) {
-//         this.userService = userService;
-//     }
+    private final UserService userService;
 
-//     @PostMapping("/register")
-//     public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
-//         User user = userService.register(request);
-//         return ResponseEntity.status(HttpStatus.CREATED).body(user);
-//     }
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
 
-//     @PostMapping("/login")
-//     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-//         AuthResponse response = userService.login(request);
-//         return ResponseEntity.ok(response);
-//     }
-// }
+    // POST /auth/register
+    @PostMapping("/register")
+    public User register(@RequestBody User user) {
+        return userService.register(user);
+    }
+
+    // POST /auth/login
+    @PostMapping("/login")
+    public User login(
+            @RequestParam String email,
+            @RequestParam String password) {
+
+        return userService.login(email, password);
+    }
+}
