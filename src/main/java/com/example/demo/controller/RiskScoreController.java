@@ -1,35 +1,41 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.model.RiskScore;
-// import com.example.demo.service.RiskScoreService;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.model.RiskScore;
+import com.example.demo.service.RiskScoreService;
 
-// import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-// @RestController
-// @RequestMapping("/api/risk-scores")
-// @Tag(name = "Risk Scores")
-// public class RiskScoreController {
+import java.util.List;
 
-//     private final RiskScoreService riskScoreService;
+@RestController
+@RequestMapping("/api/risk-scores")
+public class RiskScoreController {
 
-//     public RiskScoreController(RiskScoreService riskScoreService) {
-//         this.riskScoreService = riskScoreService;
-//     }
+    private final RiskScoreService riskScoreService;
 
-//     @PostMapping("/evaluate/{visitorId}")
-//     public RiskScore evaluate(@PathVariable Long visitorId) {
-//         return riskScoreService.evaluateVisitor(visitorId);
-//     }
+    public RiskScoreController(RiskScoreService riskScoreService) {
+        this.riskScoreService = riskScoreService;
+    }
 
-//     @GetMapping("/{visitorId}")
-//     public RiskScore getScore(@PathVariable Long visitorId) {
-//         return riskScoreService.getScoreForVisitor(visitorId);
-//     }
+    // POST /api/risk-scores/evaluate/{visitorId} → evaluate visitor
+    @PostMapping("/evaluate/{visitorId}")
+    public RiskScore evaluateVisitor(@PathVariable Long visitorId) {
+        return riskScoreService.evaluateVisitor(visitorId);
+    }
 
-//     @GetMapping
-//     public List<RiskScore> getAllScores() {
-//         return riskScoreService.getAllScores();
-//     }
-// }
+    // GET /api/risk-scores/{visitorId} → get score for visitor
+    @GetMapping("/{visitorId}")
+    public RiskScore getScoreForVisitor(@PathVariable Long visitorId) {
+        return riskScoreService.getScoreForVisitor(visitorId);
+    }
+
+    // GET /api/risk-scores → list all scores
+    @GetMapping
+    public List<RiskScore> getAllScores() {
+        return riskScoreService.getAllScores();
+    }
+}

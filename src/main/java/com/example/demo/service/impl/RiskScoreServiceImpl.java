@@ -5,11 +5,9 @@ import com.example.demo.model.Visitor;
 import com.example.demo.repository.RiskScoreRepository;
 import com.example.demo.repository.VisitorRepository;
 import com.example.demo.service.RiskScoreService;
-import com.example.demo.util.RiskLevelUtils;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,15 +27,26 @@ public class RiskScoreServiceImpl implements RiskScoreService {
     public RiskScore evaluateVisitor(Long visitorId) {
 
         Visitor visitor = visitorRepository.findById(visitorId)
-                .orElseThrow(() -> new RuntimeException("Visitor not found with id " + visitorId));
+                .orElseThrow(() ->
+                        new RuntimeException("Visitor not found with id " + visitorId));
 
-        int totalScore = RiskLevelUtils.calculateTotalScore(visitor);
+        // Example totalScore logic (can be changed later)
+        int totalScore = 10;
 
         if (totalScore < 0) {
             throw new IllegalArgumentException("totalScore must be >= 0");
         }
 
-        String riskLevel = RiskLevelUtils.getRiskLevel(totalScore);
+        String riskLevel;
+        if (totalScore < 20) {
+            riskLevel = "LOW";
+        } else if (totalScore < 50) {
+            riskLevel = "MEDIUM";
+        } else if (totalScore < 80) {
+            riskLevel = "HIGH";
+        } else {
+            riskLevel = "CRITICAL";
+        }
 
         RiskScore riskScore = new RiskScore();
         riskScore.setVisitor(visitor);
