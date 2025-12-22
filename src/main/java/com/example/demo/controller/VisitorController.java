@@ -1,35 +1,42 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.model.Visitor;
-// import com.example.demo.service.VisitorService;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.entity.Visitor;
+import com.example.demo.service.VisitorService;
 
-// import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
-// @RestController
-// @RequestMapping("/api/visitors")
-// @Tag(name = "Visitors")
-// public class VisitorController {
+import java.util.List;
 
-//     private final VisitorService visitorService;
+@RestController
+@RequestMapping("/api/visitors")
+public class VisitorController {
 
-//     public VisitorController(VisitorService visitorService) {
-//         this.visitorService = visitorService;
-//     }
+    private final VisitorService visitorService;
 
-//     @PostMapping
-//     public Visitor createVisitor(@RequestBody Visitor visitor) {
-//         return visitorService.createVisitor(visitor);
-//     }
+    public VisitorController(VisitorService visitorService) {
+        this.visitorService = visitorService;
+    }
 
-//     @GetMapping("/{id}")
-//     public Visitor getVisitor(@PathVariable Long id) {
-//         return visitorService.getVisitor(id);
-//     }
+    // POST /api/visitors → create visitor
+    @PostMapping
+    public Visitor createVisitor(@RequestBody Visitor visitor) {
+        return visitorService.createVisitor(visitor);
+    }
 
-//     @GetMapping
-//     public List<Visitor> getAllVisitors() {
-//         return visitorService.getAllVisitors();
-//     }
-// }
+    // GET /api/visitors → list all visitors
+    @GetMapping
+    public List<Visitor> getAllVisitors() {
+        return visitorService.getAllVisitors();
+    }
+
+    // GET /api/visitors/{id} → get visitor by id
+    @GetMapping("/{id}")
+    public Visitor getVisitor(@PathVariable Long id) {
+        return visitorService.getVisitor(id);
+    }
+}
