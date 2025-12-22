@@ -1,11 +1,12 @@
-// package com.example.demo.repository;
+package com.example.demo.repository;
 
-// import com.example.demo.model.ScoreAuditLog;
-// import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.model.ScoreAuditLog;
 
-// import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-// public interface ScoreAuditLogRepository extends JpaRepository<ScoreAuditLog, Long> {
+import java.util.List;
 
-//     List<ScoreAuditLog> findByVisitorId(Long visitorId);
-// }
+public interface ScoreAuditLogRepository extends JpaRepository<ScoreAuditLog, Long> {
+
+    List<ScoreAuditLog> findByVisitorId(Long visitorId);
+}
