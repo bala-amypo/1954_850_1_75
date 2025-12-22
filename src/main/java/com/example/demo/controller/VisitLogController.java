@@ -1,37 +1,54 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.model.VisitLog;
-// import com.example.demo.service.VisitLogService;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-// import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-// @RestController
-// @RequestMapping("/api/visit-logs")
-// @Tag(name = "Visit Logs")
-// public class VisitLogController {
+import com.example.demo.model.VisitLog;
+import com.example.demo.service.VisitLogService;
 
-//     private final VisitLogService visitLogService;
+@RestController
+@RequestMapping("/api/visit-logs")
+public class VisitLogController {
 
-//     public VisitLogController(VisitLogService visitLogService) {
-//         this.visitLogService = visitLogService;
-//     }
+    private final VisitLogService visitLogService;
 
-//     @PostMapping("/{visitorId}")
-//     public VisitLog createLog(
-//             @PathVariable Long visitorId,
-//             @RequestBody VisitLog log) {
-//         return visitLogService.createVisitLog(visitorId, log);
-//     }
+    public VisitLogController(VisitLogService visitLogService) {
+        this.visitLogService = visitLogService;
+    }
 
-//     @GetMapping("/{id}")
-//     public VisitLog getLog(@PathVariable Long id) {
-//         return visitLogService.getLog(id);
-//     }
+    // POST /api/visit-logs/{visitorId}
+    @PostMapping("/{visitorId}")
+    public ResponseEntity<VisitLog> createVisitLog(
+            @PathVariable Long visitorId,
+            @RequestBody VisitLog visitLog) {
 
-//     @GetMapping("/visitor/{visitorId}")
-//     public List<VisitLog> getLogsByVisitor(@PathVariable Long visitorId) {
-//         return visitLogService.getLogsByVisitor(visitorId);
-//     }
-// }
+        VisitLog createdLog = visitLogService.createVisitLog(visitorId, visitLog);
+        return new ResponseEntity<>(createdLog, HttpStatus.CREATED);
+    }
+
+    // GET /api/visit-logs/visitor/{visitorId}
+    @GetMapping("/visitor/{visitorId}")
+    public ResponseEntity<List<VisitLog>> getLogsByVisitor(
+            @PathVariable Long visitorId) {
+
+        List<VisitLog> logs = visitLogService.getLogsByVisitor(visitorId);
+        return ResponseEntity.ok(logs);
+    }
+
+    // GET /api/visit-logs/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<VisitLog> getVisitLog(
+            @PathVariable Long id) {
+
+        VisitLog log = visitLogService.getLog(id);
+        return ResponseEntity.ok(log);
+    }
+}
