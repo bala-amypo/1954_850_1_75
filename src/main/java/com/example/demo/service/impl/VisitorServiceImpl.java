@@ -1,37 +1,52 @@
-// package com.example.demo.service.impl;
+package com.example.demo.service.impl;
 
-// import com.example.demo.exception.BadRequestException;
-// import com.example.demo.exception.ResourceNotFoundException;
-// import com.example.demo.model.Visitor;
-// import com.example.demo.repository.VisitorRepository;
-// import com.example.demo.service.VisitorService;
+import com.example.demo.entity.Visitor;
+import com.example.demo.repository.VisitorRepository;
+import com.example.demo.service.VisitorService;
 
-// import java.util.List;
+import org.springframework.stereotype.Service;
 
-// public class VisitorServiceImpl implements VisitorService {
+import java.time.LocalDateTime;
+import java.util.List;
 
-//     private final VisitorRepository visitorRepository;
+@Service
+public class VisitorServiceImpl implements VisitorService {
 
-//     public VisitorServiceImpl(VisitorRepository visitorRepository) {
-//         this.visitorRepository = visitorRepository;
-//     }
+    private final VisitorRepository visitorRepository;
 
-//     @Override
-//     public Visitor createVisitor(Visitor visitor) {
-//         if (visitor.getPhone() == null || visitor.getPhone().isBlank()) {
-//             throw new BadRequestException("phone required");
-//         }
-//         return visitorRepository.save(visitor);
-//     }
+    public VisitorServiceImpl(VisitorRepository visitorRepository) {
+        this.visitorRepository = visitorRepository;
+    }
 
-//     @Override
-//     public Visitor getVisitor(Long id) {
-//         return visitorRepository.findById(id)
-//                 .orElseThrow(() -> new ResourceNotFoundException("Visitor not found"));
-//     }
+    @Override
+    public Visitor createVisitor(Visitor visitor) {
 
-//     @Override
-//     public List<Visitor> getAllVisitors() {
-//         return visitorRepository.findAll();
-//     }
-// }
+        // Rule: fullName, phone, idProof required
+        if (visitor.getFullName() == null || visitor.getFullName().isEmpty()) {
+            throw new IllegalArgumentException("fullName required");
+        }
+
+        if (visitor.getPhone() == null || visitor.getPhone().isEmpty()) {
+            throw new IllegalArgumentException("phone required");
+        }
+
+        if (visitor.getIdProof() == null || visitor.getIdProof().isEmpty()) {
+            throw new IllegalArgumentException("idProof required");
+        }
+
+        visitor.setCreatedAt(LocalDateTime.now());
+
+        return visitorRepository.save(visitor);
+    }
+
+    @Override
+    public Visitor getVisitor(Long id) {
+        return visitorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Visitor not found with id " + id));
+    }
+
+    @Override
+    public List<Visitor> getAllVisitors() {
+        return visitorRepository.findAll();
+    }
+}
