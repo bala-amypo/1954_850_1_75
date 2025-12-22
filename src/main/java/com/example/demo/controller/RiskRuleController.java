@@ -24,7 +24,6 @@ public class RiskRuleController {
         this.riskRuleService = riskRuleService;
     }
 
-    // POST /api/risk-rules
     @PostMapping
     public ResponseEntity<RiskRule> createRule(
             @RequestBody RiskRule rule) {
@@ -33,7 +32,7 @@ public class RiskRuleController {
         return new ResponseEntity<>(createdRule, HttpStatus.CREATED);
     }
 
-    // GET /api/risk-rules
+    
     @GetMapping
     public ResponseEntity<List<RiskRule>> getAllRules() {
 
@@ -41,7 +40,6 @@ public class RiskRuleController {
         return ResponseEntity.ok(rules);
     }
 
-    // GET /api/risk-rules/{id}
     @GetMapping("/{id}")
     public ResponseEntity<RiskRule> getRule(
             @PathVariable Long id) {

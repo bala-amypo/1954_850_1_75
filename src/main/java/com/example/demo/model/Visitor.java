@@ -20,7 +20,7 @@ public class Visitor {
     @Column(nullable = false)
     private String fullName;
 
-    // email is optional
+   
     private String email;
 
     @Column(nullable = false)
