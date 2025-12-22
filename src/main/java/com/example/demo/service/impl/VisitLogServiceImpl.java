@@ -1,49 +1,50 @@
-// package com.example.demo.service.impl;
+package com.example.demo.service;
 
-// import com.example.demo.exception.BadRequestException;
-// import com.example.demo.exception.ResourceNotFoundException;
-// import com.example.demo.model.VisitLog;
-// import com.example.demo.model.Visitor;
-// import com.example.demo.repository.VisitLogRepository;
-// import com.example.demo.repository.VisitorRepository;
-// import com.example.demo.service.VisitLogService;
+import java.util.List;
 
-// import java.util.List;
+import org.springframework.stereotype.Service;
 
-// public class VisitLogServiceImpl implements VisitLogService {
+import com.example.demo.model.VisitLog;
+import com.example.demo.model.Visitor;
+import com.example.demo.repository.VisitLogRepository;
+import com.example.demo.repository.VisitorRepository;
 
-//     private final VisitLogRepository visitLogRepository;
-//     private final VisitorRepository visitorRepository;
+@Service
+public class VisitLogServiceImpl implements VisitLogService {
 
-//     public VisitLogServiceImpl(
-//             VisitLogRepository visitLogRepository,
-//             VisitorRepository visitorRepository) {
-//         this.visitLogRepository = visitLogRepository;
-//         this.visitorRepository = visitorRepository;
-//     }
+    private final VisitLogRepository visitLogRepository;
+    private final VisitorRepository visitorRepository;
 
-//     @Override
-//     public VisitLog createVisitLog(Long visitorId, VisitLog log) {
-//         Visitor visitor = visitorRepository.findById(visitorId)
-//                 .orElseThrow(() -> new ResourceNotFoundException("Visitor not found"));
+    public VisitLogServiceImpl(
+            VisitLogRepository visitLogRepository,
+            VisitorRepository visitorRepository) {
+        this.visitLogRepository = visitLogRepository;
+        this.visitorRepository = visitorRepository;
+    }
 
-//         if (log.getExitTime() != null &&
-//                 !log.getExitTime().isAfter(log.getEntryTime())) {
-//             throw new BadRequestException("exitTime must be after entryTime");
-//         }
+    @Override
+    public VisitLog createVisitLog(Long visitorId, VisitLog log) {
 
-//         log.setVisitor(visitor);
-//         return visitLogRepository.save(log);
-//     }
+        Visitor visitor = visitorRepository.findById(visitorId)
+                .orElseThrow(() -> new RuntimeException("Visitor not found"));
 
-//     @Override
-//     public VisitLog getLog(Long id) {
-//         return visitLogRepository.findById(id)
-//                 .orElseThrow(() -> new ResourceNotFoundException("VisitLog not found"));
-//     }
+        log.setVisitor(visitor);
 
-//     @Override
-//     public List<VisitLog> getLogsByVisitor(Long visitorId) {
-//         return visitLogRepository.findAll();
-//     }
-// }
+        return visitLogRepository.save(log);
+    }
+
+    @Override
+    public VisitLog getLog(Long id) {
+        return visitLogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("VisitLog not found"));
+    }
+
+    @Override
+    public List<VisitLog> getLogsByVisitor(Long visitorId) {
+
+        Visitor visitor = visitorRepository.findById(visitorId)
+                .orElseThrow(() -> new RuntimeException("Visitor not found"));
+
+        return visitLogRepository.findByVisitor(visitor);
+    }
+}
