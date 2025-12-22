@@ -1,38 +1,46 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.model.ScoreAuditLog;
-// import com.example.demo.service.ScoreAuditLogService;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.model.ScoreAuditLog;
+import com.example.demo.service.ScoreAuditLogService;
 
-// import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
-// @RestController
-// @RequestMapping("/api/score-logs")
-// @Tag(name = "Score Audit Logs")
-// public class ScoreAuditLogController {
+import java.util.List;
 
-//     private final ScoreAuditLogService scoreAuditLogService;
+@RestController
+@RequestMapping("/api/score-logs")
+public class ScoreAuditLogController {
 
-//     public ScoreAuditLogController(ScoreAuditLogService scoreAuditLogService) {
-//         this.scoreAuditLogService = scoreAuditLogService;
-//     }
+    private final ScoreAuditLogService scoreAuditLogService;
 
-//     @PostMapping("/{visitorId}/{ruleId}")
-//     public ScoreAuditLog createLog(
-//             @PathVariable Long visitorId,
-//             @PathVariable Long ruleId,
-//             @RequestBody ScoreAuditLog log) {
-//         return scoreAuditLogService.logScoreChange(visitorId, ruleId, log);
-//     }
+    public ScoreAuditLogController(ScoreAuditLogService scoreAuditLogService) {
+        this.scoreAuditLogService = scoreAuditLogService;
+    }
 
-//     @GetMapping("/{id}")
-//     public ScoreAuditLog getLog(@PathVariable Long id) {
-//         return scoreAuditLogService.getLog(id);
-//     }
+    // POST /api/score-logs/{visitorId}/{ruleId} → create audit log
+    @PostMapping("/{visitorId}/{ruleId}")
+    public ScoreAuditLog createAuditLog(
+            @PathVariable Long visitorId,
+            @PathVariable Long ruleId,
+            @RequestBody ScoreAuditLog log) {
 
-//     @GetMapping("/visitor/{visitorId}")
-//     public List<ScoreAuditLog> getLogsByVisitor(@PathVariable Long visitorId) {
-//         return scoreAuditLogService.getLogsByVisitor(visitorId);
-//     }
-// }
+        return scoreAuditLogService.logScoreChange(visitorId, ruleId, log);
+    }
+
+    // GET /api/score-logs/visitor/{visitorId} → list logs for visitor
+    @GetMapping("/visitor/{visitorId}")
+    public List<ScoreAuditLog> getLogsByVisitor(@PathVariable Long visitorId) {
+        return scoreAuditLogService.getLogsByVisitor(visitorId);
+    }
+
+    // GET /api/score-logs/{id} → get log by id
+    @GetMapping("/{id}")
+    public ScoreAuditLog getLog(@PathVariable Long id) {
+        return scoreAuditLogService.getLog(id);
+    }
+}
