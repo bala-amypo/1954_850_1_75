@@ -1,41 +1,38 @@
-package com.example.demo.model;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import com.example.demo.model.ScoreAuditLog;
+import com.example.demo.service.ScoreAuditLogService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ScoreAuditLog {
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RestController
+@RequestMapping("/api/score-logs")
+@Tag(name = "Score Audit Logs")
+public class ScoreAuditLogController {
 
-    @ManyToOne
-    private Visitor visitor;
+    private final ScoreAuditLogService scoreAuditLogService;
 
-    @ManyToOne
-    private RiskRule appliedRule;
+    public ScoreAuditLogController(ScoreAuditLogService scoreAuditLogService) {
+        this.scoreAuditLogService = scoreAuditLogService;
+    }
 
-    private Integer scoreChange;
+    @PostMapping("/{visitorId}/{ruleId}")
+    public ScoreAuditLog createLog(
+            @PathVariable Long visitorId,
+            @PathVariable Long ruleId,
+            @RequestBody ScoreAuditLog log) {
+        return scoreAuditLogService.logScoreChange(visitorId, ruleId, log);
+    }
 
-    private String reason;
+    @GetMapping("/{id}")
+    public ScoreAuditLog getLog(@PathVariable Long id) {
+        return scoreAuditLogService.getLog(id);
+    }
 
-    private LocalDateTime loggedAt;
-
-    @PrePersist
-    public void validate() {
-        if (scoreChange == null || scoreChange < 0) {
-            throw new RuntimeException("scoreChange must be >= 0");
-        }
-        if (reason == null || reason.isBlank()) {
-            throw new RuntimeException("reason required");
-        }
-        this.loggedAt = LocalDateTime.now();
+    @GetMapping("/visitor/{visitorId}")
+    public List<ScoreAuditLog> getLogsByVisitor(@PathVariable Long visitorId) {
+        return scoreAuditLogService.getLogsByVisitor(visitorId);
     }
 }

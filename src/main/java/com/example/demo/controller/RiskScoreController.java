@@ -1,33 +1,35 @@
-package com.example.demo.model;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
+import com.example.demo.model.RiskScore;
+import com.example.demo.service.RiskScoreService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class RiskScore {
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RestController
+@RequestMapping("/api/risk-scores")
+@Tag(name = "Risk Scores")
+public class RiskScoreController {
 
-    @OneToOne
-    private Visitor visitor;
+    private final RiskScoreService riskScoreService;
 
-    private Integer totalScore;
+    public RiskScoreController(RiskScoreService riskScoreService) {
+        this.riskScoreService = riskScoreService;
+    }
 
-    private String riskLevel;
-    // LOW / MEDIUM / HIGH / CRITICAL
+    @PostMapping("/evaluate/{visitorId}")
+    public RiskScore evaluate(@PathVariable Long visitorId) {
+        return riskScoreService.evaluateVisitor(visitorId);
+    }
 
-    private LocalDateTime evaluatedAt;
+    @GetMapping("/{visitorId}")
+    public RiskScore getScore(@PathVariable Long visitorId) {
+        return riskScoreService.getScoreForVisitor(visitorId);
+    }
 
-    @PrePersist
-    public void prePersist() {
-        this.evaluatedAt = LocalDateTime.now();
+    @GetMapping
+    public List<RiskScore> getAllScores() {
+        return riskScoreService.getAllScores();
     }
 }
