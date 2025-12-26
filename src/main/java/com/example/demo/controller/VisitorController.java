@@ -1,19 +1,6 @@
-package com.example.demo.controller;
-
-import com.example.demo.model.Visitor;
-import com.example.demo.service.VisitorService;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/visitors")
+@RequestMapping("/visitors")
+@Tag(name = "Visitor")
 public class VisitorController {
 
     private final VisitorService visitorService;
@@ -22,21 +9,18 @@ public class VisitorController {
         this.visitorService = visitorService;
     }
 
-    // POST /api/visitors → create visitor
     @PostMapping
-    public Visitor createVisitor(@RequestBody Visitor visitor) {
-        return visitorService.createVisitor(visitor);
+    public ResponseEntity<Visitor> create(@RequestBody Visitor v) {
+        return ResponseEntity.ok(visitorService.createVisitor(v));
     }
 
-    // GET /api/visitors → list all visitors
-    @GetMapping
-    public List<Visitor> getAllVisitors() {
-        return visitorService.getAllVisitors();
-    }
-
-    // GET /api/visitors/{id} → get visitor by id
     @GetMapping("/{id}")
-    public Visitor getVisitor(@PathVariable Long id) {
-        return visitorService.getVisitor(id);
+    public ResponseEntity<Visitor> get(@PathVariable Long id) {
+        return ResponseEntity.ok(visitorService.getVisitor(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Visitor>> all() {
+        return ResponseEntity.ok(visitorService.getAllVisitors());
     }
 }
