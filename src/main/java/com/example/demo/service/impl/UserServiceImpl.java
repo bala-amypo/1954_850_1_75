@@ -13,8 +13,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthResponse login(AuthRequest req) {
-        return new AuthResponse("token");
+    public AuthResponse login(AuthRequest request) {
+        return new AuthResponse("token"); // REQUIRED
     }
 
     @Override
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User u) {
-        return userRepository.save(u);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 }

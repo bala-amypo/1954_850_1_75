@@ -9,17 +9,14 @@ public class RiskScoreController {
         this.riskScoreService = riskScoreService;
     }
 
-    @PostMapping("/evaluate/{visitorId}")
-    public ResponseEntity<RiskScore> evaluate(@PathVariable Long visitorId) {
+    public ResponseEntity<RiskScore> evaluate(Long visitorId) {
         return ResponseEntity.ok(riskScoreService.evaluateVisitor(visitorId));
     }
 
-    @GetMapping("/{visitorId}")
-    public ResponseEntity<RiskScore> get(@PathVariable Long visitorId) {
+    public ResponseEntity<RiskScore> get(Long visitorId) {
         return ResponseEntity.ok(riskScoreService.getScoreForVisitor(visitorId));
     }
 
-    @GetMapping
     public ResponseEntity<List<RiskScore>> all() {
         return ResponseEntity.ok(riskScoreService.getAllScores());
     }
