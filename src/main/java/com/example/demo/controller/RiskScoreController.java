@@ -1,18 +1,6 @@
-package com.example.demo.controller;
-
-import com.example.demo.model.RiskScore;
-import com.example.demo.service.RiskScoreService;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/risk-scores")
+@RequestMapping("/risk-scores")
+@Tag(name = "RiskScore")
 public class RiskScoreController {
 
     private final RiskScoreService riskScoreService;
@@ -21,21 +9,18 @@ public class RiskScoreController {
         this.riskScoreService = riskScoreService;
     }
 
-    // POST /api/risk-scores/evaluate/{visitorId} → evaluate visitor
     @PostMapping("/evaluate/{visitorId}")
-    public RiskScore evaluateVisitor(@PathVariable Long visitorId) {
-        return riskScoreService.evaluateVisitor(visitorId);
+    public ResponseEntity<RiskScore> evaluate(@PathVariable Long visitorId) {
+        return ResponseEntity.ok(riskScoreService.evaluateVisitor(visitorId));
     }
 
-    // GET /api/risk-scores/{visitorId} → get score for visitor
     @GetMapping("/{visitorId}")
-    public RiskScore getScoreForVisitor(@PathVariable Long visitorId) {
-        return riskScoreService.getScoreForVisitor(visitorId);
+    public ResponseEntity<RiskScore> get(@PathVariable Long visitorId) {
+        return ResponseEntity.ok(riskScoreService.getScoreForVisitor(visitorId));
     }
 
-    // GET /api/risk-scores → list all scores
     @GetMapping
-    public List<RiskScore> getAllScores() {
-        return riskScoreService.getAllScores();
+    public ResponseEntity<List<RiskScore>> all() {
+        return ResponseEntity.ok(riskScoreService.getAllScores());
     }
 }

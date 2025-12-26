@@ -1,14 +1,3 @@
-package com.example.demo.controller;
-
-import com.example.demo.model.User;
-import com.example.demo.service.UserService;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -19,18 +8,25 @@ public class AuthController {
         this.userService = userService;
     }
 
-    // POST /auth/register
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.register(user);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
+
+        Optional<User> existing = userService.findByEmail(req.getEmail());
+        if (existing.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User u = User.builder()
+                .email(req.getEmail())
+                .password(req.getPassword())
+                .roles(req.getRoles())
+                .build();
+
+        return ResponseEntity.ok(userService.save(u));
     }
 
-    // POST /auth/login
     @PostMapping("/login")
-    public User login(
-            @RequestParam String email,
-            @RequestParam String password) {
-
-        return userService.login(email, password);
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
+        return ResponseEntity.ok(userService.login(req));
     }
 }
