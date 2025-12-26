@@ -11,18 +11,17 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
 
-        Optional<User> existing = userService.findByEmail(req.getEmail());
-        if (existing.isPresent()) {
-            return ResponseEntity.badRequest().build();
+        if (userService.findByEmail(req.getEmail()).isPresent()) {
+            return ResponseEntity.status(400).build();
         }
 
-        User u = User.builder()
+        User user = User.builder()
                 .email(req.getEmail())
                 .password(req.getPassword())
                 .roles(req.getRoles())
                 .build();
 
-        return ResponseEntity.ok(userService.save(u));
+        return ResponseEntity.ok(userService.save(user));
     }
 
     @PostMapping("/login")
