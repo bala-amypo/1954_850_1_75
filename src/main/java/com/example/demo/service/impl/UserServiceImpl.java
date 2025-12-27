@@ -1,15 +1,14 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.*;
-import com.example.demo.model.User;
+import com.example.demo.model.*;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Set;
 
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(
+                .role(
                         request.getRoles() != null
                                 ? request.getRoles()
                                 : Set.of("ROLE_USER")
@@ -55,31 +54,24 @@ public class UserServiceImpl implements UserService {
     public AuthResponse login(AuthRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Invalid email or password"
-                ));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email"));
 
-        // password validation skipped for now (demo purpose)
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+        }
+
         String token = jwtTokenProvider.createToken(
                 user.getId(),
                 user.getEmail(),
-                user.getRoles()
+                user.getRole()
         );
 
-        return new AuthResponse(
-                token,
-                "Bearer",
-                user.getRoles()
-        );
+        return new AuthResponse(token, "Bearer", user.getRole());
     }
 
     @Override
     public User getByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "User not found"
-                ));
+        return userRepository.findByEmail(email).orElse(null);
     }
 }
