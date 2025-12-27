@@ -1,98 +1,53 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RiskScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(optional = false)
+    @JoinColumn(name = "visitor_id", nullable = false, unique = true)
+    @JsonIgnoreProperties({"visitLogs"})
     private Visitor visitor;
 
     private Integer totalScore;
-    private String riskLevel;
 
-    @OneToOne
-    private RiskRule riskRule;
+    @Column(nullable = false)
+    private String riskLevel;
 
     private LocalDateTime evaluatedAt;
 
-    public RiskScore() {}
-
-    /* ---------- getters & setters ---------- */
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Visitor getVisitor() { return visitor; }
-    public void setVisitor(Visitor visitor) { this.visitor = visitor; }
-
-    public Integer getTotalScore() { return totalScore; }
-    public void setTotalScore(Integer totalScore) { this.totalScore = totalScore; }
-
-    public String getRiskLevel() { return riskLevel; }
-    public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
-
-    public RiskRule getRiskRule() { return riskRule; }
-    public void setRiskRule(RiskRule riskRule) { this.riskRule = riskRule; }
-
-    public LocalDateTime getEvaluatedAt() { return evaluatedAt; }
-    public void setEvaluatedAt(LocalDateTime evaluatedAt) {
-        this.evaluatedAt = evaluatedAt;
-    }
-
-    /* ---------- lifecycle ---------- */
+    @OneToOne
+    @JoinColumn(name = "riskrule_id", nullable = false)
+    private RiskRule riskRule;
 
     @PrePersist
-    public void prePersist() {
-        if (evaluatedAt == null) {
-            evaluatedAt = LocalDateTime.now();
+    protected void prePersist() {
+        if (visitor == null) {
+            throw new RuntimeException("visitor required");
+        }
+        if (totalScore < 0) {
+            throw new RuntimeException("totalScore cannot be negative");
+        }
+        if (riskLevel == null || riskLevel.isBlank()) {
+            throw new RuntimeException("riskLevel required");
+        }
+        if (this.evaluatedAt == null) {
+            this.evaluatedAt = LocalDateTime.now();
         }
     }
 
-    /* ---------- builder ---------- */
-
-    public static Builder builder() { return new Builder(); }
-
-    public static class Builder {
-        private final RiskScore r = new RiskScore();
-
-        public Builder id(Long id) {
-            r.setId(id);
-            return this;
-        }
-
-        public Builder visitor(Visitor visitor) {
-            r.setVisitor(visitor);
-            return this;
-        }
-
-        public Builder totalScore(Integer totalScore) {
-            r.setTotalScore(totalScore);
-            return this;
-        }
-
-        public Builder riskLevel(String riskLevel) {
-            r.setRiskLevel(riskLevel);
-            return this;
-        }
-
-        public Builder riskRule(RiskRule riskRule) {
-            r.setRiskRule(riskRule);
-            return this;
-        }
-
-        public Builder evaluatedAt(LocalDateTime time) {
-            r.setEvaluatedAt(time);
-            return this;
-        }
-
-        public RiskScore build() {
-            return r;
-        }
-    }
 }
