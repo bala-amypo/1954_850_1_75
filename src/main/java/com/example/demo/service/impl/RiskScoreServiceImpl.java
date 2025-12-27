@@ -1,13 +1,11 @@
+
 package com.example.demo.service.impl;
 
-import com.example.demo.model.RiskScore;
-import com.example.demo.model.Visitor;
-import com.example.demo.repository.RiskScoreRepository;
-import com.example.demo.repository.VisitorRepository;
-import com.example.demo.service.RiskScoreService;
-
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
+import com.example.demo.service.*;
+import com.example.demo.util.RiskLevelUtils;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -15,50 +13,40 @@ public class RiskScoreServiceImpl implements RiskScoreService {
 
     private final RiskScoreRepository riskScoreRepository;
     private final VisitorRepository visitorRepository;
+    private final RiskRuleRepository riskRuleRepository;
 
-    public RiskScoreServiceImpl(
-            RiskScoreRepository riskScoreRepository,
-            VisitorRepository visitorRepository) {
+    public RiskScoreServiceImpl(RiskScoreRepository riskScoreRepository,
+                                VisitorRepository visitorRepository,
+                                RiskRuleRepository riskRuleRepository) {
         this.riskScoreRepository = riskScoreRepository;
         this.visitorRepository = visitorRepository;
+        this.riskRuleRepository = riskRuleRepository;
     }
 
     @Override
     public RiskScore evaluateVisitor(Long visitorId) {
-
         Visitor visitor = visitorRepository.findById(visitorId)
-                .orElseThrow(() ->
-                        new RuntimeException("Visitor not found with id " + visitorId));
+                .orElseThrow(() -> new RuntimeException("Visitor not found"));
 
-        // Example totalScore logic (can be changed later)
-        int totalScore = 10;
+        return riskScoreRepository.findByVisitorId(visitorId).orElseGet(() -> {
+            int scoreValue = 50;
 
-        if (totalScore < 0) {
-            throw new IllegalArgumentException("totalScore must be >= 0");
-        }
+            RiskScore score = new RiskScore();
+            score.setVisitor(visitor);
+            score.setTotalScore(scoreValue);
+            score.setRiskLevel(RiskLevelUtils.determineRiskLevel(scoreValue));
 
-        String riskLevel;
-        if (totalScore < 20) {
-            riskLevel = "LOW";
-        } else if (totalScore < 50) {
-            riskLevel = "MEDIUM";
-        } else if (totalScore < 80) {
-            riskLevel = "HIGH";
-        } else {
-            riskLevel = "CRITICAL";
-        }
+            RiskRule appliedRule = riskRuleRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("No RiskRule found"));
+            score.setRiskRule(appliedRule);
 
-        RiskScore riskScore = new RiskScore();
-        riskScore.setVisitor(visitor);
-        riskScore.setTotalScore(totalScore);
-        riskScore.setRiskLevel(riskLevel);
-
-        return riskScoreRepository.save(riskScore);
+            return riskScoreRepository.save(score);
+        });
     }
 
     @Override
     public RiskScore getScoreForVisitor(Long visitorId) {
-        return riskScoreRepository.findByVisitorId(visitorId);
+        return riskScoreRepository.findByVisitorId(visitorId).orElse(null);
     }
 
     @Override

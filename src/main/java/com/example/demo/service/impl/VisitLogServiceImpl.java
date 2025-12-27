@@ -1,13 +1,17 @@
-package com.example.demo.service;
 
-import java.util.List;
 
-import org.springframework.stereotype.Service;
+
+package com.example.demo.service.impl;
 
 import com.example.demo.model.VisitLog;
 import com.example.demo.model.Visitor;
 import com.example.demo.repository.VisitLogRepository;
 import com.example.demo.repository.VisitorRepository;
+import com.example.demo.service.VisitLogService;
+import com.example.demo.exception.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class VisitLogServiceImpl implements VisitLogService {
@@ -15,9 +19,7 @@ public class VisitLogServiceImpl implements VisitLogService {
     private final VisitLogRepository visitLogRepository;
     private final VisitorRepository visitorRepository;
 
-    public VisitLogServiceImpl(
-            VisitLogRepository visitLogRepository,
-            VisitorRepository visitorRepository) {
+    public VisitLogServiceImpl(VisitLogRepository visitLogRepository, VisitorRepository visitorRepository) {
         this.visitLogRepository = visitLogRepository;
         this.visitorRepository = visitorRepository;
     }
@@ -25,26 +27,28 @@ public class VisitLogServiceImpl implements VisitLogService {
     @Override
     public VisitLog createVisitLog(Long visitorId, VisitLog log) {
 
+        if (log.getPurpose() == null || log.getPurpose().isBlank()) {
+            throw new IllegalArgumentException("purpose is required");
+        }
+
+        if (log.getLocation() == null || log.getLocation().isBlank()) {
+            throw new IllegalArgumentException("location is required");
+        }
+
         Visitor visitor = visitorRepository.findById(visitorId)
-                .orElseThrow(() -> new RuntimeException("Visitor not found"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Visitor not found"));
         log.setVisitor(visitor);
-
         return visitLogRepository.save(log);
     }
 
     @Override
     public VisitLog getLog(Long id) {
         return visitLogRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("VisitLog not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("VisitLog not found"));
     }
 
     @Override
     public List<VisitLog> getLogsByVisitor(Long visitorId) {
-
-        Visitor visitor = visitorRepository.findById(visitorId)
-                .orElseThrow(() -> new RuntimeException("Visitor not found"));
-
-        return visitLogRepository.findByVisitor(visitor);
+        return visitLogRepository.findByVisitorId(visitorId);
     }
 }

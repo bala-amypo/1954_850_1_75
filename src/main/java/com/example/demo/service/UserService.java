@@ -1,5 +1,10 @@
+package com.example.demo.service;
+
+import com.example.demo.dto.*;
+import com.example.demo.model.*;
+
 public interface UserService {
+    User register(RegisterRequest request);
     AuthResponse login(AuthRequest request);
-    Optional<User> findByEmail(String email);
-    User save(User user);
+    User getByEmail(String email);
 }

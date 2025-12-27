@@ -1,45 +1,37 @@
+
 package com.example.demo.service.impl;
 
-import com.example.demo.model.ScoreAuditLog;
-import com.example.demo.model.Visitor;
-import com.example.demo.model.RiskRule;
-import com.example.demo.repository.ScoreAuditLogRepository;
-import com.example.demo.repository.VisitorRepository;
-import com.example.demo.repository.RiskRuleRepository;
-import com.example.demo.service.ScoreAuditLogService;
-
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
+import com.example.demo.service.*;
 import org.springframework.stereotype.Service;
+import java.util.*;
+import com.example.demo.exception.ResourceNotFoundException;
 
-import java.util.List;
 
 @Service
 public class ScoreAuditLogServiceImpl implements ScoreAuditLogService {
 
-    private final ScoreAuditLogRepository scoreAuditLogRepository;
+    private final ScoreAuditLogRepository auditLogRepository;
     private final VisitorRepository visitorRepository;
-    private final RiskRuleRepository riskRuleRepository;
+    private final RiskRuleRepository ruleRepository;
 
-    public ScoreAuditLogServiceImpl(
-            ScoreAuditLogRepository scoreAuditLogRepository,
-            VisitorRepository visitorRepository,
-            RiskRuleRepository riskRuleRepository) {
-        this.scoreAuditLogRepository = scoreAuditLogRepository;
+    public ScoreAuditLogServiceImpl(ScoreAuditLogRepository auditLogRepository,
+                                    VisitorRepository visitorRepository,
+                                    RiskRuleRepository ruleRepository) {
+        this.auditLogRepository = auditLogRepository;
         this.visitorRepository = visitorRepository;
-        this.riskRuleRepository = riskRuleRepository;
+        this.ruleRepository = ruleRepository;
     }
 
     @Override
     public ScoreAuditLog logScoreChange(Long visitorId, Long ruleId, ScoreAuditLog log) {
-
         Visitor visitor = visitorRepository.findById(visitorId)
-                .orElseThrow(() ->
-                        new RuntimeException("Visitor not found with id " + visitorId));
+                .orElseThrow(() -> new ResourceNotFoundException("Visitor not found"));
+        RiskRule rule = ruleRepository.findById(ruleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rule not found"));
 
-        RiskRule rule = riskRuleRepository.findById(ruleId)
-                .orElseThrow(() ->
-                        new RuntimeException("RiskRule not found with id " + ruleId));
-
-        if (log.getReason() == null || log.getReason().isEmpty()) {
+        if (log.getReason() == null || log.getReason().isBlank()) {
             throw new IllegalArgumentException("reason required");
         }
 
@@ -50,18 +42,17 @@ public class ScoreAuditLogServiceImpl implements ScoreAuditLogService {
         log.setVisitor(visitor);
         log.setAppliedRule(rule);
 
-        return scoreAuditLogRepository.save(log);
+        return auditLogRepository.save(log);
     }
 
     @Override
     public List<ScoreAuditLog> getLogsByVisitor(Long visitorId) {
-        return scoreAuditLogRepository.findByVisitorId(visitorId);
+        return auditLogRepository.findByVisitorId(visitorId);
     }
 
     @Override
     public ScoreAuditLog getLog(Long id) {
-        return scoreAuditLogRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("ScoreAuditLog not found with id " + id));
+        return auditLogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Audit log not found"));
     }
 }
