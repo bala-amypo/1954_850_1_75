@@ -22,14 +22,65 @@ public class ScoreAuditLog {
 
     public ScoreAuditLog() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    /* ---------- getters & setters ---------- */
 
-    public static Builder builder() { return new Builder(); }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Visitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(Visitor visitor) {
+        this.visitor = visitor;
+    }
+
+    public RiskRule getAppliedRule() {
+        return appliedRule;
+    }
+
+    public void setAppliedRule(RiskRule appliedRule) {
+        this.appliedRule = appliedRule;
+    }
+
+    public Integer getScoreChange() {
+        return scoreChange;
+    }
+
+    public void setScoreChange(Integer scoreChange) {
+        this.scoreChange = scoreChange;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public LocalDateTime getLoggedAt() {
+        return loggedAt;
+    }
+
+    /* ---------- lifecycle ---------- */
 
     @PrePersist
     public void prePersist() {
-        loggedAt = LocalDateTime.now();
+        if (loggedAt == null) {
+            loggedAt = LocalDateTime.now();
+        }
+    }
+
+    /* ---------- builder ---------- */
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static class Builder {
@@ -41,22 +92,27 @@ public class ScoreAuditLog {
         }
 
         public Builder visitor(Visitor visitor) {
-            s.visitor = visitor;
+            s.setVisitor(visitor);
             return this;
         }
 
         public Builder appliedRule(RiskRule rule) {
-            s.appliedRule = rule;
+            s.setAppliedRule(rule);
             return this;
         }
 
         public Builder scoreChange(Integer scoreChange) {
-            s.scoreChange = scoreChange;
+            s.setScoreChange(scoreChange);
             return this;
         }
 
         public Builder reason(String reason) {
-            s.reason = reason;
+            s.setReason(reason);
+            return this;
+        }
+
+        public Builder loggedAt(LocalDateTime time) {
+            s.loggedAt = time;
             return this;
         }
 

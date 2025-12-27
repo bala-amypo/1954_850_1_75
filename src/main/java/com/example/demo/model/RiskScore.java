@@ -23,14 +23,38 @@ public class RiskScore {
 
     public RiskScore() {}
 
+    /* ---------- getters & setters ---------- */
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Visitor getVisitor() { return visitor; }
+    public void setVisitor(Visitor visitor) { this.visitor = visitor; }
 
     public Integer getTotalScore() { return totalScore; }
     public void setTotalScore(Integer totalScore) { this.totalScore = totalScore; }
 
     public String getRiskLevel() { return riskLevel; }
     public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
+
+    public RiskRule getRiskRule() { return riskRule; }
+    public void setRiskRule(RiskRule riskRule) { this.riskRule = riskRule; }
+
+    public LocalDateTime getEvaluatedAt() { return evaluatedAt; }
+    public void setEvaluatedAt(LocalDateTime evaluatedAt) {
+        this.evaluatedAt = evaluatedAt;
+    }
+
+    /* ---------- lifecycle ---------- */
+
+    @PrePersist
+    public void prePersist() {
+        if (evaluatedAt == null) {
+            evaluatedAt = LocalDateTime.now();
+        }
+    }
+
+    /* ---------- builder ---------- */
 
     public static Builder builder() { return new Builder(); }
 
@@ -43,7 +67,7 @@ public class RiskScore {
         }
 
         public Builder visitor(Visitor visitor) {
-            r.visitor = visitor;
+            r.setVisitor(visitor);
             return this;
         }
 
@@ -57,8 +81,13 @@ public class RiskScore {
             return this;
         }
 
-        public Builder riskRule(RiskRule rule) {
-            r.riskRule = rule;
+        public Builder riskRule(RiskRule riskRule) {
+            r.setRiskRule(riskRule);
+            return this;
+        }
+
+        public Builder evaluatedAt(LocalDateTime time) {
+            r.setEvaluatedAt(time);
             return this;
         }
 
