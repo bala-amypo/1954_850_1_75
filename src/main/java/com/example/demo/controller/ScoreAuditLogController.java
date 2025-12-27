@@ -1,6 +1,15 @@
+package com.example.demo.controller;
+
+import com.example.demo.model.ScoreAuditLog;
+import com.example.demo.service.ScoreAuditLogService;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.*;
+import java.util.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Score Audit Log Controller")
 @RestController
-@RequestMapping("/audit-logs")
-@Tag(name = "ScoreAuditLog")
+@RequestMapping("/api/score-logs")
 public class ScoreAuditLogController {
 
     private final ScoreAuditLogService scoreAuditLogService;
@@ -9,17 +18,27 @@ public class ScoreAuditLogController {
         this.scoreAuditLogService = scoreAuditLogService;
     }
 
-    public ResponseEntity<ScoreAuditLog> create(Long visitorId, Long ruleId, ScoreAuditLog log) {
+    @PostMapping("/{visitorId}/{ruleId}")
+    public ResponseEntity<ScoreAuditLog> create(
+            @PathVariable Long visitorId,
+            @PathVariable Long ruleId,
+            @RequestBody ScoreAuditLog log) {
         return ResponseEntity.ok(
                 scoreAuditLogService.logScoreChange(visitorId, ruleId, log)
         );
     }
 
-    public ResponseEntity<ScoreAuditLog> get(Long id) {
-        return ResponseEntity.ok(scoreAuditLogService.getLog(id));
+    @GetMapping("/{id}")
+    public ResponseEntity<ScoreAuditLog> get(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                scoreAuditLogService.getLog(id)
+        );
     }
 
-    public ResponseEntity<List<ScoreAuditLog>> logsByVisitor(Long visitorId) {
-        return ResponseEntity.ok(scoreAuditLogService.getLogsByVisitor(visitorId));
+    @GetMapping("/visitor/{visitorId}")
+    public ResponseEntity<List<ScoreAuditLog>> logsByVisitor(@PathVariable Long visitorId) {
+        return ResponseEntity.ok(
+                scoreAuditLogService.getLogsByVisitor(visitorId)
+        );
     }
 }

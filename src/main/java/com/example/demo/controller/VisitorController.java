@@ -1,14 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Visitor;
-import com.example.demo.service.VisitorService;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.demo.model.*;
+import com.example.demo.service.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Visitor Controller")
 @RestController
-@Tag(name = "Visitor")
+@RequestMapping("/api/visitors")
 public class VisitorController {
 
     private final VisitorService visitorService;
@@ -17,15 +18,19 @@ public class VisitorController {
         this.visitorService = visitorService;
     }
 
-    public ResponseEntity<Visitor> create(Visitor v) {
-        return ResponseEntity.ok(visitorService.createVisitor(v));
+    @PostMapping
+    public ResponseEntity<Visitor> create(@RequestBody Visitor visitor) {
+        return ResponseEntity.ok(visitorService.createVisitor(visitor));
     }
 
-    public ResponseEntity<Visitor> get(Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Visitor> get(@PathVariable Long id) {
         return ResponseEntity.ok(visitorService.getVisitor(id));
     }
 
+    @GetMapping
     public ResponseEntity<List<Visitor>> all() {
         return ResponseEntity.ok(visitorService.getAllVisitors());
     }
 }
+

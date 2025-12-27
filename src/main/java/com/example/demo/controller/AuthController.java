@@ -1,3 +1,15 @@
+package com.example.demo.controller;
+
+import com.example.demo.dto.*;
+import com.example.demo.model.*;
+import com.example.demo.service.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+@Tag(name = "Auth Controller")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -9,23 +21,20 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
-
-        if (userService.findByEmail(req.getEmail()).isPresent()) {
-            return ResponseEntity.status(400).build();
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            User user = userService.register(request);
+            return ResponseEntity.ok(user);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity
+                    .status(ex.getStatusCode())
+                    .body(ex.getReason());
         }
-
-        User user = User.builder()
-                .email(req.getEmail())
-                .password(req.getPassword())
-                .roles(req.getRoles())
-                .build();
-
-        return ResponseEntity.ok(userService.save(user));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest req) {
-        return ResponseEntity.ok(userService.login(req));
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        return ResponseEntity.ok(userService.login(request));
     }
 }
+
