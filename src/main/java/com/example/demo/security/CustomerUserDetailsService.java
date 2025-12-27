@@ -1,5 +1,5 @@
-package com.example.security;
 
-public class CustomerUserDetailsService {
-    
+package com.example.demo.security;
+
+public class CustomUserDetailsService{
 }
