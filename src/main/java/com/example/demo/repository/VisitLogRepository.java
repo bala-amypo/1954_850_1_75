@@ -1,4 +1,3 @@
-
 package com.example.demo.repository;
 
 import com.example.demo.model.VisitLog;
@@ -19,4 +18,3 @@ public interface VisitLogRepository extends JpaRepository<VisitLog, Long> {
     @Query("SELECT COUNT(v) FROM VisitLog v WHERE v.visitor.id = :visitorId AND v.entryTime >= :start AND v.entryTime <= :end")
     long countVisitsInWindow(@Param("visitorId") Long visitorId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
-

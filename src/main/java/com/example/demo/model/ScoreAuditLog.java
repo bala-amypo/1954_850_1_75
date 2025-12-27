@@ -1,123 +1,45 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ScoreAuditLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "visitor_id", nullable = false)
     private Visitor visitor;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "riskrule_id", nullable = true)
     private RiskRule appliedRule;
 
     private Integer scoreChange;
+
+    @Column(nullable = false)
     private String reason;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime loggedAt;
 
-    public ScoreAuditLog() {}
-
-    /* ---------- getters & setters ---------- */
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Visitor getVisitor() {
-        return visitor;
-    }
-
-    public void setVisitor(Visitor visitor) {
-        this.visitor = visitor;
-    }
-
-    public RiskRule getAppliedRule() {
-        return appliedRule;
-    }
-
-    public void setAppliedRule(RiskRule appliedRule) {
-        this.appliedRule = appliedRule;
-    }
-
-    public Integer getScoreChange() {
-        return scoreChange;
-    }
-
-    public void setScoreChange(Integer scoreChange) {
-        this.scoreChange = scoreChange;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public LocalDateTime getLoggedAt() {
-        return loggedAt;
-    }
-
-    /* ---------- lifecycle ---------- */
-
     @PrePersist
-    public void prePersist() {
-        if (loggedAt == null) {
-            loggedAt = LocalDateTime.now();
+    protected void prePersist() {
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("reason required");
         }
-    }
-
-    /* ---------- builder ---------- */
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private final ScoreAuditLog s = new ScoreAuditLog();
-
-        public Builder id(Long id) {
-            s.setId(id);
-            return this;
+        if (scoreChange < 0) {
+            throw new IllegalArgumentException("scoreChange must be >= 0");
         }
-
-        public Builder visitor(Visitor visitor) {
-            s.setVisitor(visitor);
-            return this;
-        }
-
-        public Builder appliedRule(RiskRule rule) {
-            s.setAppliedRule(rule);
-            return this;
-        }
-
-        public Builder scoreChange(Integer scoreChange) {
-            s.setScoreChange(scoreChange);
-            return this;
-        }
-
-        public Builder reason(String reason) {
-            s.setReason(reason);
-            return this;
-        }
-
-        public Builder loggedAt(LocalDateTime time) {
-            s.loggedAt = time;
-            return this;
-        }
-
-        public ScoreAuditLog build() {
-            return s;
-        }
+        this.loggedAt = LocalDateTime.now();
     }
 }
