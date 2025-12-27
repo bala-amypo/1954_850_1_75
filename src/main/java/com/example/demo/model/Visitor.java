@@ -1,63 +1,133 @@
-
 package com.example.demo.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Visitor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String fullName;
-
     private String email;
-
-    @Column(nullable = false)
     private String phone;
-
-    @Column(nullable = false)
     private String idProof;
 
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "visitor")
-    @JsonIgnore
     private List<VisitLog> visitLogs;
 
     @OneToOne(mappedBy = "visitor")
-    @JsonIgnore
     private RiskScore riskScore;
 
     @OneToMany(mappedBy = "visitor")
-    @JsonIgnore
     private List<ScoreAuditLog> scoreAuditLogs;
 
+    public Visitor() {}
+
+    /* ---------- getters & setters ---------- */
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getIdProof() {
+        return idProof;
+    }
+
+    public void setIdProof(String idProof) {
+        this.idProof = idProof;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public List<VisitLog> getVisitLogs() {
+        return visitLogs;
+    }
+
+    public RiskScore getRiskScore() {
+        return riskScore;
+    }
+
+    public List<ScoreAuditLog> getScoreAuditLogs() {
+        return scoreAuditLogs;
+    }
+
+    /* ---------- lifecycle ---------- */
 
     @PrePersist
     public void prePersist() {
-        if (fullName == null || fullName.isBlank()) {
-            throw new RuntimeException("fullName required");
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
         }
-        if (phone == null || phone.isBlank()) {
-            throw new RuntimeException("phone required");
+    }
+
+    /* ---------- builder ---------- */
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final Visitor v = new Visitor();
+
+        public Builder fullName(String fullName) {
+            v.setFullName(fullName);
+            return this;
         }
-        if (idProof == null || idProof.isBlank()) {
-            throw new RuntimeException("idProof required");
+
+        public Builder email(String email) {
+            v.setEmail(email);
+            return this;
         }
-        this.createdAt = LocalDateTime.now();
+
+        public Builder phone(String phone) {
+            v.setPhone(phone);
+            return this;
+        }
+
+        public Builder idProof(String idProof) {
+            v.setIdProof(idProof);
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime time) {
+            v.createdAt = time;
+            return this;
+        }
+
+        public Visitor build() {
+            return v;
+        }
     }
 }
-

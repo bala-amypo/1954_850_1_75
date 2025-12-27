@@ -20,6 +20,8 @@ public class User {
 
     public User() {}
 
+    /* ---------- getters & setters ---------- */
+
     public Long getId() {
         return id;
     }
@@ -46,5 +48,34 @@ public class User {
 
     public void setRole(Set<String> role) {
         this.role = role;
+    }
+
+    /* ---------- builder ---------- */
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final User u = new User();
+
+        public Builder email(String email) {
+            u.setEmail(email);
+            return this;
+        }
+
+        public Builder password(String password) {
+            u.setPassword(password);
+            return this;
+        }
+
+        public Builder role(Set<String> role) {
+            u.setRole(role);
+            return this;
+        }
+
+        public User build() {
+            return u;
+        }
     }
 }

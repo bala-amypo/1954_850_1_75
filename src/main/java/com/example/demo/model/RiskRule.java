@@ -1,48 +1,111 @@
 package com.example.demo.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class RiskRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String ruleName;
-
-    @Column(nullable = false)
     private String ruleType;
-
     private Integer threshold;
-
     private Integer scoreImpact;
 
     private LocalDateTime createdAt;
 
+    public RiskRule() {}
+
+    /* ---------- getters & setters ---------- */
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
+    }
+
+    public String getRuleType() {
+        return ruleType;
+    }
+
+    public void setRuleType(String ruleType) {
+        this.ruleType = ruleType;
+    }
+
+    public Integer getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Integer threshold) {
+        this.threshold = threshold;
+    }
+
+    public Integer getScoreImpact() {
+        return scoreImpact;
+    }
+
+    public void setScoreImpact(Integer scoreImpact) {
+        this.scoreImpact = scoreImpact;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    /* ---------- lifecycle ---------- */
+
     @PrePersist
-    protected void prePersist() {
-        if (ruleName == null || ruleName.isBlank()) {
-            throw new RuntimeException("ruleName required");
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
         }
-        if (ruleType == null || ruleType.isBlank()) {
-            throw new RuntimeException("ruleType required");
+    }
+
+    /* ---------- builder ---------- */
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final RiskRule r = new RiskRule();
+
+        public Builder ruleName(String name) {
+            r.setRuleName(name);
+            return this;
         }
-        if (threshold < 0) {
-            throw new RuntimeException("threshold must be greater than 0");
+
+        public Builder ruleType(String type) {
+            r.setRuleType(type);
+            return this;
         }
-        if (scoreImpact == 0) {
-            throw new RuntimeException("scoreImpact cannot be 0");
+
+        public Builder threshold(Integer threshold) {
+            r.setThreshold(threshold);
+            return this;
         }
-        this.createdAt = LocalDateTime.now();
+
+        public Builder scoreImpact(Integer impact) {
+            r.setScoreImpact(impact);
+            return this;
+        }
+
+        public Builder createdAt(LocalDateTime time) {
+            r.createdAt = time;
+            return this;
+        }
+
+        public RiskRule build() {
+            return r;
+        }
     }
 }
-
