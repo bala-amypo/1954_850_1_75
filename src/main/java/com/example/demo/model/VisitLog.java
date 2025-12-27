@@ -1,32 +1,57 @@
+
 package com.example.demo.model;
 
+import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class VisitLog {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "visitor_id", nullable = false)
+    @JsonIgnoreProperties("visitLogs")
     private Visitor visitor;
 
-    private String purpose;
-    private String location;
+    @Column(nullable = false, updatable = false)
     private LocalDateTime entryTime;
+
     private LocalDateTime exitTime;
+
+    @Column(nullable = false)
+    private String purpose;
+
+    @Column(nullable = false)
+    private String location;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        if (entryTime == null) {
-            entryTime = LocalDateTime.now();
+        if (this.entryTime == null) {
+            this.entryTime = LocalDateTime.now();
+        }
+
+        this.createdAt = LocalDateTime.now();
+
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (exitTime != null && !exitTime.isAfter(entryTime)) {
+            throw new IllegalArgumentException("exitTime must be after entryTime");
         }
     }
 }
+
