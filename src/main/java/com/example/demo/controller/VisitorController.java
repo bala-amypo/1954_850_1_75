@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.*;
-import com.example.demo.service.*;
+import com.example.demo.model.Visitor;
+import com.example.demo.service.VisitorService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
 
 @Tag(name = "Visitor Controller")
 @RestController
@@ -33,4 +34,3 @@ public class VisitorController {
         return ResponseEntity.ok(visitorService.getAllVisitors());
     }
 }
-

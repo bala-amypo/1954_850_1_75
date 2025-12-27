@@ -1,8 +1,6 @@
-
 package com.example.demo.security;
 
 import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,3 +23,4 @@ public class JwtTokenProvider {
         return claims;
     }
 }
+    
