@@ -11,18 +11,19 @@ public class VisitLog {
     private Long id;
 
     private LocalDateTime entryTime;
-
     private LocalDateTime exitTime;
 
-    private String purpose;      // ✅ REQUIRED
-    private String location;     // ✅ REQUIRED
+    private String purpose;
+    private String location;
 
     @ManyToOne
-    private Visitor visitor;     // ✅ REQUIRED
+    private Visitor visitor;
 
-    protected VisitLog() {}
+    // ✅ MUST be PUBLIC (tests use new VisitLog())
+    public VisitLog() {}
 
     private VisitLog(Builder builder) {
+        this.id = builder.id;
         this.entryTime = builder.entryTime;
         this.exitTime = builder.exitTime;
         this.purpose = builder.purpose;
@@ -30,13 +31,23 @@ public class VisitLog {
         this.visitor = builder.visitor;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    // =========================
+    // ✅ JPA LIFECYCLE (tests call it directly)
+    // =========================
+    @PrePersist
+    public void prePersist() {
+        if (entryTime == null) {
+            entryTime = LocalDateTime.now();
+        }
     }
 
     // =========================
-    // ✅ REQUIRED GETTERS
+    // ✅ GETTERS
     // =========================
+    public Long getId() {
+        return id;
+    }
+
     public LocalDateTime getEntryTime() {
         return entryTime;
     }
@@ -58,8 +69,12 @@ public class VisitLog {
     }
 
     // =========================
-    // ✅ REQUIRED SETTER
+    // ✅ SETTERS (tests require these)
     // =========================
+    public void setEntryTime(LocalDateTime entryTime) {
+        this.entryTime = entryTime;
+    }
+
     public void setVisitor(Visitor visitor) {
         this.visitor = visitor;
     }
@@ -67,13 +82,24 @@ public class VisitLog {
     // =========================
     // ✅ BUILDER
     // =========================
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
 
+        private Long id;
         private LocalDateTime entryTime;
         private LocalDateTime exitTime;
         private String purpose;
         private String location;
         private Visitor visitor;
+
+        // 🔥 REQUIRED BY TESTS
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder entryTime(LocalDateTime entryTime) {
             this.entryTime = entryTime;
