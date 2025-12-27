@@ -1,16 +1,15 @@
-
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.*;
-import com.example.demo.model.*;
+import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.http.HttpStatus;
 
 import java.util.Set;
 
@@ -32,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(RegisterRequest request) {
 
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Email already exists"
@@ -41,11 +40,11 @@ public class UserServiceImpl implements UserService {
 
         User user = User.builder()
                 .email(request.getEmail())
-                .password(passwordEncoder.encode("dummy"))
-                .role(
-                    request.getRoles() != null
-                        ? request.getRoles()
-                        : Set.of("ROLE_USER")
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(
+                        request.getRoles() != null
+                                ? request.getRoles()
+                                : Set.of("ROLE_USER")
                 )
                 .build();
 
@@ -54,11 +53,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse login(AuthRequest request) {
-        return new AuthResponse("dummy-token", request.getEmail(), Set.of("ROLE_USER"));
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Invalid email or password"
+                ));
+
+        // password validation skipped for now (demo purpose)
+        String token = jwtTokenProvider.createToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRoles()
+        );
+
+        return new AuthResponse(
+                token,
+                "Bearer",
+                user.getRoles()
+        );
     }
 
     @Override
     public User getByEmail(String email) {
-        return null;
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
     }
 }

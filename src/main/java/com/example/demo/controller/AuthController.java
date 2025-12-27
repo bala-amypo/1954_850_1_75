@@ -1,13 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.*;
-import com.example.demo.model.*;
-import com.example.demo.service.*;
+import com.example.demo.model.User;
+import com.example.demo.service.UserService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "Auth Controller")
 @RestController
@@ -21,15 +20,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        try {
-            User user = userService.register(request);
-            return ResponseEntity.ok(user);
-        } catch (ResponseStatusException ex) {
-            return ResponseEntity
-                    .status(ex.getStatusCode())
-                    .body(ex.getReason());
-        }
+    public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(userService.register(request));
     }
 
     @PostMapping("/login")
@@ -37,4 +29,3 @@ public class AuthController {
         return ResponseEntity.ok(userService.login(request));
     }
 }
-
