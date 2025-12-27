@@ -1,12 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Visitor;
-import com.example.demo.service.VisitorService;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.demo.model.*;
+import com.example.demo.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Tag(name = "Visitor Controller")
 @RestController
@@ -19,11 +19,13 @@ public class VisitorController {
         this.visitorService = visitorService;
     }
 
+    @PreAuthorize("hasAnyRole('STAFF','ADMIN')")
     @PostMapping
     public ResponseEntity<Visitor> create(@RequestBody Visitor visitor) {
         return ResponseEntity.ok(visitorService.createVisitor(visitor));
     }
 
+    @PreAuthorize("hasAnyRole('STAFF','ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Visitor> get(@PathVariable Long id) {
         return ResponseEntity.ok(visitorService.getVisitor(id));

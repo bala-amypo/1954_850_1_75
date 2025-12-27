@@ -2,11 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.model.RiskRule;
 import com.example.demo.service.RiskRuleService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.http.*;
+import java.util.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Tag(name = "Risk Rule Controller")
 @RestController
@@ -18,19 +18,26 @@ public class RiskRuleController {
     public RiskRuleController(RiskRuleService riskRuleService) {
         this.riskRuleService = riskRuleService;
     }
-
+    
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<RiskRule> create(@RequestBody RiskRule rule) {
-        return ResponseEntity.ok(riskRuleService.createRule(rule));
+        return ResponseEntity.ok(
+                riskRuleService.createRule(rule)
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RiskRule> get(@PathVariable Long id) {
-        return ResponseEntity.ok(riskRuleService.getRule(id));
+        return ResponseEntity.ok(
+                riskRuleService.getRule(id)
+        );
     }
 
     @GetMapping
     public ResponseEntity<List<RiskRule>> all() {
-        return ResponseEntity.ok(riskRuleService.getAllRules());
+        return ResponseEntity.ok(
+                riskRuleService.getAllRules()
+        );
     }
 }
