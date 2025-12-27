@@ -1,4 +1,3 @@
-
 package com.example.demo.service;
 
 import com.example.demo.model.*;
@@ -9,4 +8,3 @@ public interface ScoreAuditLogService {
     List<ScoreAuditLog> getLogsByVisitor(Long visitorId);
     ScoreAuditLog getLog(Long id);
 }
-

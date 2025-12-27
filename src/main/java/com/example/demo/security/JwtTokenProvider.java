@@ -1,26 +1,53 @@
 package com.example.demo.security;
 
 import org.springframework.stereotype.Component;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.*;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+
 
 @Component
 public class JwtTokenProvider {
 
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private long expiration;
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
     public String createToken(Long userId, String email, Set<String> roles) {
-        return "dummy-jwt-token";
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("userId", userId)
+                .claim("roles", roles)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean validateToken(String token) {
-        return token != null && !token.isBlank();
-    }
-
-    public Map<String, Object> getClaims(String token) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("token", token);
-        claims.put("valid", validateToken(token));
-        return claims;
+        try {
+            getClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
-    
+
