@@ -15,75 +15,40 @@ public class VisitLog {
 
     private String purpose;
     private String location;
-
     private LocalDateTime entryTime;
     private LocalDateTime exitTime;
 
     public VisitLog() {}
 
-    /* ---------- getters & setters ---------- */
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public Visitor getVisitor() { return visitor; }
+    public void setVisitor(Visitor visitor) { this.visitor = visitor; }
 
-    public Visitor getVisitor() {
-        return visitor;
-    }
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 
-    public void setVisitor(Visitor visitor) {
-        this.visitor = visitor;
-    }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 
-    public String getPurpose() {
-        return purpose;
-    }
-
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public LocalDateTime getEntryTime() {
-        return entryTime;
-    }
-
-    public void setEntryTime(LocalDateTime entryTime) {
-        this.entryTime = entryTime;
-    }
-
-    public LocalDateTime getExitTime() {
-        return exitTime;
-    }
-
-    public void setExitTime(LocalDateTime exitTime) {
-        this.exitTime = exitTime;
-    }
-
-    /* ---------- lifecycle ---------- */
+    public LocalDateTime getEntryTime() { return entryTime; }
+    public void setEntryTime(LocalDateTime entryTime) { this.entryTime = entryTime; }
 
     @PrePersist
     public void prePersist() {
-        if (entryTime == null) {
-            entryTime = LocalDateTime.now();
-        }
+        if (entryTime == null) entryTime = LocalDateTime.now();
     }
 
-    /* ---------- builder ---------- */
-
-    public static Builder builder() {
-        return new Builder();
-    }
+    public static Builder builder() { return new Builder(); }
 
     public static class Builder {
         private final VisitLog v = new VisitLog();
+
+        public Builder id(Long id) {
+            v.setId(id);
+            return this;
+        }
 
         public Builder visitor(Visitor visitor) {
             v.setVisitor(visitor);
@@ -102,11 +67,6 @@ public class VisitLog {
 
         public Builder entryTime(LocalDateTime entryTime) {
             v.setEntryTime(entryTime);
-            return this;
-        }
-
-        public Builder exitTime(LocalDateTime exitTime) {
-            v.setExitTime(exitTime);
             return this;
         }
 

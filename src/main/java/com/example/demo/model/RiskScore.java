@@ -23,63 +23,27 @@ public class RiskScore {
 
     public RiskScore() {}
 
-    /* ---------- getters & setters ---------- */
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public Integer getTotalScore() { return totalScore; }
+    public void setTotalScore(Integer totalScore) { this.totalScore = totalScore; }
 
-    public Visitor getVisitor() {
-        return visitor;
-    }
+    public String getRiskLevel() { return riskLevel; }
+    public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
 
-    public void setVisitor(Visitor visitor) {
-        this.visitor = visitor;
-    }
-
-    public Integer getTotalScore() {
-        return totalScore;
-    }
-
-    public void setTotalScore(Integer totalScore) {
-        this.totalScore = totalScore;
-    }
-
-    public String getRiskLevel() {
-        return riskLevel;
-    }
-
-    public void setRiskLevel(String riskLevel) {
-        this.riskLevel = riskLevel;
-    }
-
-    public RiskRule getRiskRule() {
-        return riskRule;
-    }
-
-    public void setRiskRule(RiskRule riskRule) {
-        this.riskRule = riskRule;
-    }
-
-    public LocalDateTime getEvaluatedAt() {
-        return evaluatedAt;
-    }
-
-    public void setEvaluatedAt(LocalDateTime evaluatedAt) {
-        this.evaluatedAt = evaluatedAt;
-    }
-
-    /* ---------- builder ---------- */
-
-    public static Builder builder() {
-        return new Builder();
-    }
+    public static Builder builder() { return new Builder(); }
 
     public static class Builder {
         private final RiskScore r = new RiskScore();
 
+        public Builder id(Long id) {
+            r.setId(id);
+            return this;
+        }
+
         public Builder visitor(Visitor visitor) {
-            r.setVisitor(visitor);
+            r.visitor = visitor;
             return this;
         }
 
@@ -94,12 +58,7 @@ public class RiskScore {
         }
 
         public Builder riskRule(RiskRule rule) {
-            r.setRiskRule(rule);
-            return this;
-        }
-
-        public Builder evaluatedAt(LocalDateTime time) {
-            r.setEvaluatedAt(time);
+            r.riskRule = rule;
             return this;
         }
 

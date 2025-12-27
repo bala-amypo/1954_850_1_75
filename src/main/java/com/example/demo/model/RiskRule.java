@@ -14,78 +14,47 @@ public class RiskRule {
     private String ruleType;
     private Integer threshold;
     private Integer scoreImpact;
-
     private LocalDateTime createdAt;
 
     public RiskRule() {}
 
-    /* ---------- getters & setters ---------- */
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getRuleName() { return ruleName; }
+    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
 
-    public String getRuleName() {
-        return ruleName;
-    }
+    public String getRuleType() { return ruleType; }
+    public void setRuleType(String ruleType) { this.ruleType = ruleType; }
 
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
-    }
+    public Integer getThreshold() { return threshold; }
+    public void setThreshold(Integer threshold) { this.threshold = threshold; }
 
-    public String getRuleType() {
-        return ruleType;
-    }
-
-    public void setRuleType(String ruleType) {
-        this.ruleType = ruleType;
-    }
-
-    public Integer getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(Integer threshold) {
-        this.threshold = threshold;
-    }
-
-    public Integer getScoreImpact() {
-        return scoreImpact;
-    }
-
-    public void setScoreImpact(Integer scoreImpact) {
-        this.scoreImpact = scoreImpact;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    /* ---------- lifecycle ---------- */
+    public Integer getScoreImpact() { return scoreImpact; }
+    public void setScoreImpact(Integer scoreImpact) { this.scoreImpact = scoreImpact; }
 
     @PrePersist
     public void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
-    /* ---------- builder ---------- */
-
-    public static Builder builder() {
-        return new Builder();
-    }
+    public static Builder builder() { return new Builder(); }
 
     public static class Builder {
         private final RiskRule r = new RiskRule();
 
-        public Builder ruleName(String name) {
-            r.setRuleName(name);
+        public Builder id(Long id) {
+            r.setId(id);
             return this;
         }
 
-        public Builder ruleType(String type) {
-            r.setRuleType(type);
+        public Builder ruleName(String ruleName) {
+            r.setRuleName(ruleName);
+            return this;
+        }
+
+        public Builder ruleType(String ruleType) {
+            r.setRuleType(ruleType);
             return this;
         }
 
@@ -94,13 +63,8 @@ public class RiskRule {
             return this;
         }
 
-        public Builder scoreImpact(Integer impact) {
-            r.setScoreImpact(impact);
-            return this;
-        }
-
-        public Builder createdAt(LocalDateTime time) {
-            r.createdAt = time;
+        public Builder scoreImpact(Integer scoreImpact) {
+            r.setScoreImpact(scoreImpact);
             return this;
         }
 
